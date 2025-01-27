@@ -99,11 +99,11 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
         for item in query.results {
             guard let fileItem = item as? NSMetadataItem else { continue }
             guard let fileURL = fileItem.value(forAttribute: NSMetadataItemURLKey) as? URL else { continue }
-            if fileURL.absoluteString.last == "/" { continue }
 
             let map: [String: Any?] = [
                 "relativePath": String(fileURL.absoluteString.dropFirst(containerURL.absoluteString.count)),
                 "absolutePath": fileURL.path,
+                "isDirectory": fileURL.isDirectory,
                 "sizeInBytes": fileItem.value(forAttribute: NSMetadataItemFSSizeKey),
                 "creationDate": (fileItem.value(forAttribute: NSMetadataItemFSCreationDateKey) as? Date)?.timeIntervalSince1970,
                 "contentChangeDate": (fileItem.value(forAttribute: NSMetadataItemFSContentChangeDateKey) as? Date)?.timeIntervalSince1970,
@@ -434,5 +434,11 @@ enum DebugHelper {
         #if DEBUG
             print(message)
         #endif
+    }
+}
+
+extension URL {
+    var isDirectory: Bool {
+        (try? resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
     }
 }

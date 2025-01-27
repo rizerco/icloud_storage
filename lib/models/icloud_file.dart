@@ -5,8 +5,11 @@ class ICloudFile {
   /// The absolute path.
   final String absolutePath;
 
+  /// Whether or not this is a directory.
+  final bool directory;
+
   /// Corresponding to NSMetadataItemFSSizeKey
-  final int sizeInBytes;
+  final int? sizeInBytes;
 
   /// Corresponding to NSMetadataItemFSCreationDateKey
   final DateTime creationDate;
@@ -33,6 +36,7 @@ class ICloudFile {
   ICloudFile.fromMap(Map<dynamic, dynamic> map)
       : relativePath = map['relativePath'] as String,
         absolutePath = map['absolutePath'],
+        directory = map['isDirectory'],
         sizeInBytes = map['sizeInBytes'],
         creationDate = DateTime.fromMillisecondsSinceEpoch(
             ((map['creationDate'] as double) * 1000).round()),
