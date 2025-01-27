@@ -21,6 +21,8 @@ flutter:
   plugin:
     platforms:
       ios:
-        pluginClass: IcloudStoragePlugin
+        pluginClass: ICloudStoragePlugin
+        sharedDarwinSource: true
       macos:
-        pluginClass: IcloudStoragePlugin
+        pluginClass: ICloudStoragePlugin
+        sharedDarwinSource: true

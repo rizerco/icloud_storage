@@ -1,16 +1,24 @@
-import Flutter
-import UIKit
+#if os(iOS)
+    import Flutter
+#elseif os(macOS)
+    import FlutterMacOS
+#endif
 
-public class SwiftIcloudStoragePlugin: NSObject, FlutterPlugin {
+public class ICloudStoragePlugin: NSObject, FlutterPlugin {
     var listStreamHandler: StreamHandler?
     var messenger: FlutterBinaryMessenger?
     var streamHandlers: [String: StreamHandler] = [:]
     let querySearchScopes = [NSMetadataQueryUbiquitousDataScope, NSMetadataQueryUbiquitousDocumentsScope]
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let messenger = registrar.messenger()
+        // Workaround for https://github.com/flutter/flutter/issues/118103.
+        #if os(iOS)
+            let messenger = registrar.messenger()
+        #else
+            let messenger = registrar.messenger
+        #endif
         let channel = FlutterMethodChannel(name: "icloud_storage", binaryMessenger: messenger)
-        let instance = SwiftIcloudStoragePlugin()
+        let instance = ICloudStoragePlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         instance.messenger = messenger
     }
@@ -421,7 +429,7 @@ class StreamHandler: NSObject, FlutterStreamHandler {
     }
 }
 
-class DebugHelper {
+enum DebugHelper {
     public static func log(_ message: String) {
         #if DEBUG
             print(message)
