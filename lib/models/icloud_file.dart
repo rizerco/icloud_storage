@@ -2,6 +2,9 @@ class ICloudFile {
   /// File path relative to the iCloud container
   final String relativePath;
 
+  /// The absolute path.
+  final String absolutePath;
+
   /// Corresponding to NSMetadataItemFSSizeKey
   final int sizeInBytes;
 
@@ -29,6 +32,7 @@ class ICloudFile {
   /// Constructor to create the object from the map passed from platform code
   ICloudFile.fromMap(Map<dynamic, dynamic> map)
       : relativePath = map['relativePath'] as String,
+        absolutePath = map['absolutePath'],
         sizeInBytes = map['sizeInBytes'],
         creationDate = DateTime.fromMillisecondsSinceEpoch(
             ((map['creationDate'] as double) * 1000).round()),
