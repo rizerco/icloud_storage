@@ -37,6 +37,8 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
             self.delete(call, result)
         case "move":
             self.move(call, result)
+        case "copy":
+            self.copy(call, result)
         case "createEventChannel":
             self.createEventChannel(call, result)
         default:
@@ -387,6 +389,42 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
                     DebugHelper.log("error: \(error.localizedDescription)")
                     result(self.nativeCodeError(error))
                 }
+            }
+        }
+    }
+
+    private func copy(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: Any],
+              let containerId = args["containerId"] as? String,
+              let atRelativePath = args["atRelativePath"] as? String,
+              let toRelativePath = args["toRelativePath"] as? String
+        else {
+            result(self.argumentError)
+            return
+        }
+
+        guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: containerId)
+        else {
+            result(self.containerError)
+            return
+        }
+        DebugHelper.log("containerURL: \(containerURL.path)")
+
+        let atURL = containerURL.appendingPathComponent(atRelativePath)
+        let toURL = containerURL.appendingPathComponent(toRelativePath)
+        let fileCoordinator = NSFileCoordinator(filePresenter: nil)
+        fileCoordinator.coordinate(readingItemAt: atURL, options: [], writingItemAt: toURL, options: .forMoving, error: nil) {
+            source, destination in
+            do {
+                let toDirURL = destination.deletingLastPathComponent()
+                if !FileManager.default.fileExists(atPath: toDirURL.path) {
+                    try FileManager.default.createDirectory(at: toDirURL, withIntermediateDirectories: true, attributes: nil)
+                }
+                try FileManager.default.copyItem(at: source, to: destination)
+                result(nil)
+            } catch {
+                DebugHelper.log("error: \(error.localizedDescription)")
+                result(self.nativeCodeError(error))
             }
         }
     }

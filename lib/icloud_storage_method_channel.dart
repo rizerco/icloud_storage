@@ -161,6 +161,19 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     });
   }
 
+  @override
+  Future<void> copy({
+    required containerId,
+    required String fromRelativePath,
+    required String toRelativePath,
+  }) async {
+    await methodChannel.invokeMethod('copy', {
+      'containerId': containerId,
+      'atRelativePath': fromRelativePath,
+      'toRelativePath': toRelativePath,
+    });
+  }
+
   /// Private method to convert the list of maps from platform code to a list of
   /// ICloudFile object
   List<ICloudFile> _mapFilesFromDynamicList(

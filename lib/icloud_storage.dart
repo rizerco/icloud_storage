@@ -188,6 +188,34 @@ class ICloudStorage {
     );
   }
 
+  /// Copy a file from one location to another in the iCloud container
+  ///
+  /// [containerId] is the iCloud Container Id.
+  ///
+  /// [fromRelativePath] is the relative path of the file to be moved, such as
+  /// folder1/file
+  ///
+  /// [toRelativePath] is the relative path to move to, such as folder2/file
+  ///
+  /// PlatformException with code PlatformExceptionCode.fileNotFound will be
+  /// thrown if the file does not exist
+  static Future<void> copy({
+    required String containerId,
+    required String fromRelativePath,
+    required String toRelativePath,
+  }) async {
+    if (!_validateRelativePath(fromRelativePath) ||
+        !_validateRelativePath(toRelativePath)) {
+      throw InvalidArgumentException('invalid relativePath');
+    }
+
+    await ICloudStoragePlatform.instance.copy(
+      containerId: containerId,
+      fromRelativePath: fromRelativePath,
+      toRelativePath: toRelativePath,
+    );
+  }
+
   /// Rename a file in the iCloud container
   ///
   /// [containerId] is the iCloud Container Id.
