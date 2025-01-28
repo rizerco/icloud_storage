@@ -40,7 +40,7 @@ class ICloudFile {
 
   /// Constructor to create the object from the map passed from platform code
   ICloudFile.fromMap(Map<dynamic, dynamic> map)
-      : relativePath = map['relativePath'] as String,
+      : relativePath = Uri.decodeComponent(map['relativePath']),
         absolutePath = map['absolutePath'],
         displayName = map['displayName'],
         fileSystemName = map['fileSystemName'],

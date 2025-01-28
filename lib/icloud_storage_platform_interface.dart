@@ -90,6 +90,27 @@ abstract class ICloudStoragePlatform extends PlatformInterface {
     throw UnimplementedError('download() has not been implemented.');
   }
 
+  /// Download a file from iCloud without moving it.
+  ///
+  /// [containerId] is the iCloud container ID.
+  ///
+  /// [relativePath] is the relative path of the file on iCloud, such as file1
+  /// or folder/file2.
+  ///
+  /// [onProgress] is an optional callback to track the progress of the
+  /// download. It takes a Stream<double> as input, which is the percentage of
+  /// the data being downloaded.
+  ///
+  /// The returned future completes without waiting for the file to be
+  /// downloaded.
+  Future<void> downloadInPlace({
+    required String containerId,
+    required String relativePath,
+    StreamHandler<double>? onProgress,
+  }) async {
+    throw UnimplementedError('downloadInPlace() has not been implemented.');
+  }
+
   /// Delete a file from iCloud container directory, whether it is been
   /// downloaded or not
   ///

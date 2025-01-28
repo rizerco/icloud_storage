@@ -31,6 +31,8 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
             self.upload(call, result)
         case "download":
             self.download(call, result)
+        case "downloadInPlace":
+            self.downloadInPlace(call, result)
         case "delete":
             self.delete(call, result)
         case "move":
@@ -256,7 +258,50 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    private func addDownloadObservers(query: NSMetadataQuery, cloudFileURL: URL, localFileURL: URL, eventChannelName: String) {
+    /// Downloads the file from iCloud Drive but doesn’t move it.
+    private func downloadInPlace(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let arguments = call.arguments as? [String: Any],
+              let containerID = arguments["containerId"] as? String,
+              let fileName = arguments["fileName"] as? String,
+              let eventChannelName = arguments["eventChannelName"] as? String
+        else {
+            result(self.argumentError)
+            return
+        }
+
+        guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: containerID)
+        else {
+            result(self.containerError)
+            return
+        }
+        DebugHelper.log("containerURL: \(containerURL.path)")
+
+        let cloudFileURL = containerURL.appendingPathComponent(fileName)
+        do {
+            try FileManager.default.startDownloadingUbiquitousItem(at: cloudFileURL)
+        } catch {
+            result(self.nativeCodeError(error))
+        }
+
+        let query = NSMetadataQuery()
+        query.operationQueue = .main
+        query.searchScopes = self.querySearchScopes
+        query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemPathKey, cloudFileURL.path)
+
+        let downloadStreamHandler = self.streamHandlers[eventChannelName]
+        downloadStreamHandler?.onCancelHandler = { [self] in
+            self.removeObservers(query)
+            query.stop()
+            self.removeStreamHandler(eventChannelName)
+        }
+
+        self.addDownloadObservers(query: query, cloudFileURL: cloudFileURL, eventChannelName: eventChannelName)
+
+        query.start()
+        result(nil)
+    }
+
+    private func addDownloadObservers(query: NSMetadataQuery, cloudFileURL: URL, localFileURL: URL? = nil, eventChannelName: String) {
         NotificationCenter.default.addObserver(forName: NSNotification.Name.NSMetadataQueryDidFinishGathering, object: query, queue: query.operationQueue) { [self] notification in
             self.onDownloadQueryNotification(query: query, cloudFileURL: cloudFileURL, localFileURL: localFileURL, eventChannelName: eventChannelName)
         }
@@ -266,7 +311,7 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func onDownloadQueryNotification(query: NSMetadataQuery, cloudFileURL: URL, localFileURL: URL, eventChannelName: String) {
+    private func onDownloadQueryNotification(query: NSMetadataQuery, cloudFileURL: URL, localFileURL: URL? = nil, eventChannelName: String) {
         if query.results.count == 0 {
             return
         }
@@ -287,7 +332,9 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
 
         if fileURLValues.ubiquitousItemDownloadingStatus == URLUbiquitousItemDownloadingStatus.current {
             do {
-                try self.moveCloudFile(at: cloudFileURL, to: localFileURL)
+                if let local = localFileURL {
+                    try self.moveCloudFile(at: cloudFileURL, to: local)
+                }
                 streamHandler?.setEvent(FlutterEndOfEventStream)
                 self.removeStreamHandler(eventChannelName)
             } catch {

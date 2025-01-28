@@ -107,6 +107,37 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   }
 
   @override
+  Future<void> downloadInPlace({
+    required String containerId,
+    required String relativePath,
+    StreamHandler<double>? onProgress,
+  }) async {
+    var eventChannelName = '';
+
+    if (onProgress != null) {
+      eventChannelName =
+          _generateEventChannelName('downloadInPlace', containerId);
+
+      await methodChannel.invokeMethod(
+          'createEventChannel', {'eventChannelName': eventChannelName});
+
+      final downloadEventChannel = EventChannel(eventChannelName);
+      final stream = downloadEventChannel
+          .receiveBroadcastStream()
+          .where((event) => event is double)
+          .map((event) => event as double);
+
+      onProgress(stream);
+    }
+
+    await methodChannel.invokeMethod('downloadInPlace', {
+      'containerId': containerId,
+      'fileName': relativePath,
+      'eventChannelName': eventChannelName
+    });
+  }
+
+  @override
   Future<void> delete({
     required containerId,
     required String relativePath,
