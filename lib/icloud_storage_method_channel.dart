@@ -140,11 +140,11 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   @override
   Future<void> delete({
     required containerId,
-    required String relativePath,
+    required List<String> relativePaths,
   }) async {
     await methodChannel.invokeMethod('delete', {
       'containerId': containerId,
-      'cloudFileName': relativePath,
+      'paths': relativePaths,
     });
   }
 

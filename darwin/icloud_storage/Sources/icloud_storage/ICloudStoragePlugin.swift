@@ -357,7 +357,7 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
     private func delete(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: Any],
               let containerId = args["containerId"] as? String,
-              let cloudFileName = args["cloudFileName"] as? String
+              let paths = args["paths"] as? [String]
         else {
             result(self.argumentError)
             return
@@ -370,21 +370,23 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
         }
         DebugHelper.log("containerURL: \(containerURL.path)")
 
-        let fileURL = containerURL.appendingPathComponent(cloudFileName)
-        let fileCoordinator = NSFileCoordinator(filePresenter: nil)
-        fileCoordinator.coordinate(writingItemAt: fileURL, options: NSFileCoordinator.WritingOptions.forDeleting, error: nil) {
-            writingURL in
-            do {
-                var isDir: ObjCBool = false
-                if !FileManager.default.fileExists(atPath: writingURL.path, isDirectory: &isDir) {
-                    result(self.fileNotFoundError)
-                    return
+        for path in paths {
+            let fileURL = containerURL.appendingPathComponent(path)
+            let fileCoordinator = NSFileCoordinator(filePresenter: nil)
+            fileCoordinator.coordinate(writingItemAt: fileURL, options: NSFileCoordinator.WritingOptions.forDeleting, error: nil) {
+                writingURL in
+                do {
+                    var isDir: ObjCBool = false
+                    if !FileManager.default.fileExists(atPath: writingURL.path, isDirectory: &isDir) {
+                        result(self.fileNotFoundError)
+                        return
+                    }
+                    try FileManager.default.removeItem(at: writingURL)
+                    result(nil)
+                } catch {
+                    DebugHelper.log("error: \(error.localizedDescription)")
+                    result(self.nativeCodeError(error))
                 }
-                try FileManager.default.removeItem(at: writingURL)
-                result(nil)
-            } catch {
-                DebugHelper.log("error: \(error.localizedDescription)")
-                result(self.nativeCodeError(error))
             }
         }
     }
