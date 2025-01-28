@@ -5,6 +5,12 @@ class ICloudFile {
   /// The absolute path.
   final String absolutePath;
 
+  /// The display name.
+  final String displayName;
+
+  /// The file system name.
+  final String fileSystemName;
+
   /// Whether or not this is a directory.
   final bool directory;
 
@@ -36,6 +42,8 @@ class ICloudFile {
   ICloudFile.fromMap(Map<dynamic, dynamic> map)
       : relativePath = map['relativePath'] as String,
         absolutePath = map['absolutePath'],
+        displayName = map['displayName'],
+        fileSystemName = map['fileSystemName'],
         directory = map['isDirectory'],
         sizeInBytes = map['sizeInBytes'],
         creationDate = DateTime.fromMillisecondsSinceEpoch(

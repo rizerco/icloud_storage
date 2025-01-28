@@ -100,10 +100,15 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
             guard let fileItem = item as? NSMetadataItem else { continue }
             guard let fileURL = fileItem.value(forAttribute: NSMetadataItemURLKey) as? URL else { continue }
 
+            let isHidden = (try? fileURL.resourceValues(forKeys: [.isHiddenKey]).isHidden) ?? false
+            guard !isHidden else { continue }
+
             let map: [String: Any?] = [
                 "relativePath": String(fileURL.absoluteString.dropFirst(containerURL.absoluteString.count)),
                 "absolutePath": fileURL.path,
                 "isDirectory": fileURL.isDirectory,
+                "displayName": fileItem.value(forAttribute: NSMetadataItemDisplayNameKey),
+                "fileSystemName": fileItem.value(forAttribute: NSMetadataItemFSNameKey),
                 "sizeInBytes": fileItem.value(forAttribute: NSMetadataItemFSSizeKey),
                 "creationDate": (fileItem.value(forAttribute: NSMetadataItemFSCreationDateKey) as? Date)?.timeIntervalSince1970,
                 "contentChangeDate": (fileItem.value(forAttribute: NSMetadataItemFSContentChangeDateKey) as? Date)?.timeIntervalSince1970,
