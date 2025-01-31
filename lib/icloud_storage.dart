@@ -150,24 +150,22 @@ class ICloudStorage {
   ///
   /// [containerId] is the iCloud Container Id.
   ///
-  /// [relativePaths] is the relative path of the file on iCloud, such as file1
+  /// [relativePath] is the relative path of the file on iCloud, such as file1
   /// or folder/file2
   ///
   /// PlatformException with code PlatformExceptionCode.fileNotFound will be
   /// thrown if the file does not exist
   static Future<void> delete({
     required String containerId,
-    required List<String> relativePaths,
+    required String relativePath,
   }) async {
-    for (final path in relativePaths) {
-      if (!_validateRelativePath(path)) {
-        throw InvalidArgumentException('invalid path');
-      }
+    if (!_validateRelativePath(relativePath)) {
+      throw InvalidArgumentException('invalid relativePath');
     }
 
     await ICloudStoragePlatform.instance.delete(
       containerId: containerId,
-      relativePaths: relativePaths,
+      relativePath: relativePath,
     );
   }
 
@@ -264,7 +262,9 @@ class ICloudStorage {
   /// Private method to validate relative path; each part must be valid name
   static bool _validateRelativePath(String path) {
     final fileOrDirNames = path.split('/');
-    return fileOrDirNames.isNotEmpty;
+    if (fileOrDirNames.isEmpty) return false;
+
+    return fileOrDirNames.every((name) => _validateFileName(name));
   }
 
   /// Private method to validate file name. It shall not contain '/' or ':', and

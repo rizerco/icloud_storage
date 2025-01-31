@@ -27,7 +27,7 @@ class _DeleteState extends State<Delete> {
 
       await ICloudStorage.delete(
         containerId: _containerIdController.text,
-        relativePaths: [_relativePathController.text],
+        relativePath: _relativePathController.text,
       );
 
       setState(() {

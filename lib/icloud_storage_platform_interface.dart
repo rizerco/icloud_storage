@@ -125,14 +125,14 @@ abstract class ICloudStoragePlatform extends PlatformInterface {
   ///
   /// [containerId] is the iCloud Container Id.
   ///
-  /// [relativePaths] are the relative paths of the file on iCloud, such as file1
+  /// [relativePath] is the relative path of the file on iCloud, such as file1
   /// or folder/file2
   ///
   /// PlatformException with code PlatformExceptionCode.fileNotFound will be
   /// thrown if the file does not exist
   Future<void> delete({
     required String containerId,
-    required List<String> relativePaths,
+    required String relativePath,
   }) async {
     throw UnimplementedError('delete() has not been implemented.');
   }
