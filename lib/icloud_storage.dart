@@ -27,6 +27,17 @@ class ICloudStorage {
     );
   }
 
+  /// Get the root directory path for iCloud Drive storage.
+  ///
+  /// [containerId] is the iCloud Container Id.
+  static Future<String> rootDirectory({
+    required String containerId,
+  }) async {
+    return await ICloudStoragePlatform.instance.rootDirectory(
+      containerId: containerId,
+    );
+  }
+
   /// Initiate to upload a file to iCloud
   ///
   /// [containerId] is the iCloud Container Id.

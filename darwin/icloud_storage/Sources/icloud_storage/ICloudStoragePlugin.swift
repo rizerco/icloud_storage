@@ -39,6 +39,8 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
             self.move(call, result)
         case "copy":
             self.copy(call, result)
+        case "rootDirectory":
+            self.rootDirectory(call, result)
         case "createEventChannel":
             self.createEventChannel(call, result)
         default:
@@ -427,6 +429,23 @@ public class ICloudStoragePlugin: NSObject, FlutterPlugin {
                 result(self.nativeCodeError(error))
             }
         }
+    }
+
+    /// Returns the root directory for iCloud storage.
+    private func rootDirectory(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: Any],
+              let containerId = args["containerId"] as? String
+        else {
+            result(self.argumentError)
+            return
+        }
+
+        guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: containerId)
+        else {
+            result(self.containerError)
+            return
+        }
+        result(containerURL.path)
     }
 
     private func move(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {

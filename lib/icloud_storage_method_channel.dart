@@ -43,6 +43,15 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   }
 
   @override
+  Future<String> rootDirectory({
+    required String containerId,
+  }) async {
+    return await methodChannel.invokeMethod('rootDirectory', {
+      'containerId': containerId,
+    });
+  }
+
+  @override
   Future<void> upload({
     required String containerId,
     required String filePath,

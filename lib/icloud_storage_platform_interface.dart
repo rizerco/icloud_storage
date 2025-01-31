@@ -42,6 +42,15 @@ abstract class ICloudStoragePlatform extends PlatformInterface {
     throw UnimplementedError('gather() has not been implemented.');
   }
 
+  /// Get the root directory path for iCloud Drive storage.
+  ///
+  /// [containerId] is the iCloud Container Id.
+  Future<String> rootDirectory({
+    required String containerId,
+  }) async {
+    throw UnimplementedError('rootDirectory() has not been implemented.');
+  }
+
   /// Upload a local file to iCloud.
   ///
   /// [containerId] is the iCloud Container Id.
