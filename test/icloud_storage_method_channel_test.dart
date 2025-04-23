@@ -28,7 +28,7 @@ void main() {
               'isUploading': false,
               'isUploaded': false,
               'hasUnresolvedConflicts': false,
-            }
+            },
           ];
         default:
           return null;
@@ -46,9 +46,13 @@ void main() {
       expect(files.last.relativePath, 'relativePath');
       expect(files.last.sizeInBytes, 100);
       expect(
-          files.last.creationDate, DateTime.fromMillisecondsSinceEpoch(1000));
-      expect(files.last.contentChangeDate,
-          DateTime.fromMillisecondsSinceEpoch(1000));
+        files.last.creationDate,
+        DateTime.fromMillisecondsSinceEpoch(1000),
+      );
+      expect(
+        files.last.contentChangeDate,
+        DateTime.fromMillisecondsSinceEpoch(1000),
+      );
       expect(files.last.isDownloading, true);
       expect(files.last.downloadStatus, DownloadStatus.notDownloaded);
       expect(files.last.isUploading, false);
@@ -57,14 +61,12 @@ void main() {
     });
 
     test('gather with update', () async {
-      await platform.gather(
-        containerId: containerId,
-        onUpdate: (stream) {},
-      );
+      await platform.gather(containerId: containerId, onUpdate: (stream) {});
       expect((mockMethodCall.arguments['containerId'] as String), containerId);
       expect(
-          (mockMethodCall.arguments['eventChannelName'] as String).isNotEmpty,
-          true);
+        (mockMethodCall.arguments['eventChannelName'] as String).isNotEmpty,
+        true,
+      );
     });
   });
 
@@ -77,7 +79,9 @@ void main() {
       );
       expect((mockMethodCall.arguments['containerId'] as String), containerId);
       expect(
-          (mockMethodCall.arguments['localFilePath'] as String), '/dir/file');
+        (mockMethodCall.arguments['localFilePath'] as String),
+        '/dir/file',
+      );
       expect((mockMethodCall.arguments['cloudFileName'] as String), 'dest');
       expect((mockMethodCall.arguments['eventChannelName'] as String), '');
     });
@@ -90,8 +94,9 @@ void main() {
         onProgress: (stream) => {},
       );
       expect(
-          (mockMethodCall.arguments['eventChannelName'] as String).isNotEmpty,
-          true);
+        (mockMethodCall.arguments['eventChannelName'] as String).isNotEmpty,
+        true,
+      );
     });
   });
 
@@ -104,7 +109,9 @@ void main() {
       );
       expect((mockMethodCall.arguments['containerId'] as String), containerId);
       expect(
-          (mockMethodCall.arguments['localFilePath'] as String), '/dir/dest');
+        (mockMethodCall.arguments['localFilePath'] as String),
+        '/dir/dest',
+      );
       expect((mockMethodCall.arguments['cloudFileName'] as String), 'file');
       expect((mockMethodCall.arguments['eventChannelName'] as String), '');
     });
@@ -117,25 +124,24 @@ void main() {
         onProgress: (stream) => {},
       );
       expect(
-          (mockMethodCall.arguments['eventChannelName'] as String).isNotEmpty,
-          true);
+        (mockMethodCall.arguments['eventChannelName'] as String).isNotEmpty,
+        true,
+      );
     });
   });
 
   test('delete', () async {
-    await platform.delete(
-      containerId: containerId,
-      relativePath: 'file',
-    );
+    await platform.delete(containerId: containerId, relativePath: 'file');
     expect((mockMethodCall.arguments['containerId'] as String), containerId);
     expect((mockMethodCall.arguments['cloudFileName'] as String), 'file');
   });
 
   test('move', () async {
     await platform.move(
-        containerId: containerId,
-        fromRelativePath: 'from',
-        toRelativePath: 'to');
+      containerId: containerId,
+      fromRelativePath: 'from',
+      toRelativePath: 'to',
+    );
     expect((mockMethodCall.arguments['containerId'] as String), containerId);
     expect((mockMethodCall.arguments['atRelativePath'] as String), 'from');
     expect((mockMethodCall.arguments['toRelativePath'] as String), 'to');

@@ -15,37 +15,39 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     required String containerId,
     StreamHandler<List<ICloudFile>>? onUpdate,
   }) async {
-    final eventChannelName = onUpdate == null
-        ? ''
-        : _generateEventChannelName('gather', containerId);
+    final eventChannelName =
+        onUpdate == null
+            ? ''
+            : _generateEventChannelName('gather', containerId);
 
     if (onUpdate != null) {
-      await methodChannel.invokeMethod(
-          'createEventChannel', {'eventChannelName': eventChannelName});
+      await methodChannel.invokeMethod('createEventChannel', {
+        'eventChannelName': eventChannelName,
+      });
 
       final gatherEventChannel = EventChannel(eventChannelName);
       final stream = gatherEventChannel
           .receiveBroadcastStream()
           .where((event) => event is List)
-          .map<List<ICloudFile>>((event) => _mapFilesFromDynamicList(
-              List<Map<dynamic, dynamic>>.from(event)));
+          .map<List<ICloudFile>>(
+            (event) => _mapFilesFromDynamicList(
+              List<Map<dynamic, dynamic>>.from(event),
+            ),
+          );
 
       onUpdate(stream);
     }
 
-    final mapList =
-        await methodChannel.invokeListMethod<Map<dynamic, dynamic>>('gather', {
-      'containerId': containerId,
-      'eventChannelName': eventChannelName,
-    });
+    final mapList = await methodChannel.invokeListMethod<Map<dynamic, dynamic>>(
+      'gather',
+      {'containerId': containerId, 'eventChannelName': eventChannelName},
+    );
 
     return _mapFilesFromDynamicList(mapList);
   }
 
   @override
-  Future<String> rootDirectory({
-    required String containerId,
-  }) async {
+  Future<String> rootDirectory({required String containerId}) async {
     return await methodChannel.invokeMethod('rootDirectory', {
       'containerId': containerId,
     });
@@ -63,8 +65,9 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     if (onProgress != null) {
       eventChannelName = _generateEventChannelName('upload', containerId);
 
-      await methodChannel.invokeMethod(
-          'createEventChannel', {'eventChannelName': eventChannelName});
+      await methodChannel.invokeMethod('createEventChannel', {
+        'eventChannelName': eventChannelName,
+      });
 
       final uploadEventChannel = EventChannel(eventChannelName);
       final stream = uploadEventChannel
@@ -79,7 +82,7 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
       'containerId': containerId,
       'localFilePath': filePath,
       'cloudFileName': destinationRelativePath,
-      'eventChannelName': eventChannelName
+      'eventChannelName': eventChannelName,
     });
   }
 
@@ -95,8 +98,9 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     if (onProgress != null) {
       eventChannelName = _generateEventChannelName('download', containerId);
 
-      await methodChannel.invokeMethod(
-          'createEventChannel', {'eventChannelName': eventChannelName});
+      await methodChannel.invokeMethod('createEventChannel', {
+        'eventChannelName': eventChannelName,
+      });
 
       final downloadEventChannel = EventChannel(eventChannelName);
       final stream = downloadEventChannel
@@ -111,7 +115,7 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
       'containerId': containerId,
       'cloudFileName': relativePath,
       'localFilePath': destinationFilePath,
-      'eventChannelName': eventChannelName
+      'eventChannelName': eventChannelName,
     });
   }
 
@@ -124,11 +128,14 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     var eventChannelName = '';
 
     if (onProgress != null) {
-      eventChannelName =
-          _generateEventChannelName('downloadInPlace', containerId);
+      eventChannelName = _generateEventChannelName(
+        'downloadInPlace',
+        containerId,
+      );
 
-      await methodChannel.invokeMethod(
-          'createEventChannel', {'eventChannelName': eventChannelName});
+      await methodChannel.invokeMethod('createEventChannel', {
+        'eventChannelName': eventChannelName,
+      });
 
       final downloadEventChannel = EventChannel(eventChannelName);
       final stream = downloadEventChannel
@@ -142,7 +149,7 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
     await methodChannel.invokeMethod('downloadInPlace', {
       'containerId': containerId,
       'fileName': relativePath,
-      'eventChannelName': eventChannelName
+      'eventChannelName': eventChannelName,
     });
   }
 
@@ -186,7 +193,8 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   /// Private method to convert the list of maps from platform code to a list of
   /// ICloudFile object
   List<ICloudFile> _mapFilesFromDynamicList(
-      List<Map<dynamic, dynamic>>? mapList) {
+    List<Map<dynamic, dynamic>>? mapList,
+  ) {
     List<ICloudFile> files = [];
     if (mapList != null) {
       for (final map in mapList) {
@@ -195,7 +203,8 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
         } catch (ex) {
           if (kDebugMode) {
             print(
-                'WARNING: icloud_storange plugin gatherFiles method has to omit a file as it could not map $map to iCloudFile; Exception: $ex');
+              'WARNING: icloud_storange plugin gatherFiles method has to omit a file as it could not map $map to iCloudFile; Exception: $ex',
+            );
           }
         }
       }
@@ -204,14 +213,16 @@ class MethodChannelICloudStorage extends ICloudStoragePlatform {
   }
 
   /// Private method to generate event channel names
-  String _generateEventChannelName(String eventType, String containerId,
-          [String? additionalIdentifier]) =>
-      [
-        'icloud_storage',
-        'event',
-        eventType,
-        containerId,
-        ...(additionalIdentifier == null ? [] : [additionalIdentifier]),
-        '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(999)}'
-      ].join('/');
+  String _generateEventChannelName(
+    String eventType,
+    String containerId, [
+    String? additionalIdentifier,
+  ]) => [
+    'icloud_storage',
+    'event',
+    eventType,
+    containerId,
+    ...(additionalIdentifier == null ? [] : [additionalIdentifier]),
+    '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(999)}',
+  ].join('/');
 }

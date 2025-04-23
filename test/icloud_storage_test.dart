@@ -25,35 +25,40 @@ class MockIcloudStoragePlatform
   }
 
   @override
-  Future<void> upload(
-      {required String containerId,
-      required String filePath,
-      required String destinationRelativePath,
-      StreamHandler<double>? onProgress}) async {
+  Future<void> upload({
+    required String containerId,
+    required String filePath,
+    required String destinationRelativePath,
+    StreamHandler<double>? onProgress,
+  }) async {
     _uploadDestinationRelativePath = destinationRelativePath;
     _calls.add('upload');
   }
 
   @override
-  Future<void> download(
-      {required String containerId,
-      required String relativePath,
-      required String destinationFilePath,
-      StreamHandler<double>? onProgress}) async {
+  Future<void> download({
+    required String containerId,
+    required String relativePath,
+    required String destinationFilePath,
+    StreamHandler<double>? onProgress,
+  }) async {
     _calls.add('download');
   }
 
   @override
-  Future<void> delete(
-      {required String containerId, required String relativePath}) async {
+  Future<void> delete({
+    required String containerId,
+    required String relativePath,
+  }) async {
     _calls.add('delete');
   }
 
   @override
-  Future<void> move(
-      {required String containerId,
-      required String fromRelativePath,
-      required String toRelativePath}) async {
+  Future<void> move({
+    required String containerId,
+    required String fromRelativePath,
+    required String toRelativePath,
+  }) async {
     _moveToRelativePath = toRelativePath;
     _calls.add('move');
   }
@@ -78,16 +83,19 @@ void main() {
     group('upload tests:', () {
       test('upload without destinationRelativePath specified', () async {
         await ICloudStorage.upload(
-            containerId: containerId, filePath: '/dir/file');
+          containerId: containerId,
+          filePath: '/dir/file',
+        );
         expect(fakePlatform.uploadDestinationRelativePath, 'file');
         expect(fakePlatform.calls.last, 'upload');
       });
 
       test('upload with destinationRelativePath specified', () async {
         await ICloudStorage.upload(
-            containerId: containerId,
-            filePath: '/dir/file',
-            destinationRelativePath: 'destFile');
+          containerId: containerId,
+          filePath: '/dir/file',
+          destinationRelativePath: 'destFile',
+        );
         expect(fakePlatform.uploadDestinationRelativePath, 'destFile');
         expect(fakePlatform.calls.last, 'upload');
       });
@@ -95,7 +103,9 @@ void main() {
       test('upload with invalid filePath', () async {
         expect(
           () async => await ICloudStorage.upload(
-              containerId: containerId, filePath: ''),
+            containerId: containerId,
+            filePath: '',
+          ),
           throwsException,
         );
       });
@@ -103,30 +113,35 @@ void main() {
       test('upload with invalid destinationRelativePath - 2 slahes', () async {
         expect(
           () async => await ICloudStorage.upload(
-              containerId: containerId,
-              filePath: 'dir/file',
-              destinationRelativePath: 'dir//file'),
+            containerId: containerId,
+            filePath: 'dir/file',
+            destinationRelativePath: 'dir//file',
+          ),
           throwsException,
         );
       });
 
-      test('upload with invalid destinationRelativePath - dots in front',
-          () async {
-        expect(
-          () async => await ICloudStorage.upload(
+      test(
+        'upload with invalid destinationRelativePath - dots in front',
+        () async {
+          expect(
+            () async => await ICloudStorage.upload(
               containerId: containerId,
               filePath: 'dir/file',
-              destinationRelativePath: '..file'),
-          throwsException,
-        );
-      });
+              destinationRelativePath: '..file',
+            ),
+            throwsException,
+          );
+        },
+      );
 
       test('upload with invalid destinationRelativePath - colon', () async {
         expect(
           () async => await ICloudStorage.upload(
-              containerId: containerId,
-              filePath: 'dir/file',
-              destinationRelativePath: 'dir:file'),
+            containerId: containerId,
+            filePath: 'dir/file',
+            destinationRelativePath: 'dir:file',
+          ),
           throwsException,
         );
       });
@@ -178,15 +193,18 @@ void main() {
 
     test('delete', () async {
       await ICloudStorage.delete(
-          containerId: containerId, relativePath: 'file');
+        containerId: containerId,
+        relativePath: 'file',
+      );
       expect(fakePlatform.calls.last, 'delete');
     });
 
     test('move', () async {
       await ICloudStorage.move(
-          containerId: containerId,
-          fromRelativePath: 'from',
-          toRelativePath: 'to');
+        containerId: containerId,
+        fromRelativePath: 'from',
+        toRelativePath: 'to',
+      );
       expect(fakePlatform.calls.last, 'move');
     });
 

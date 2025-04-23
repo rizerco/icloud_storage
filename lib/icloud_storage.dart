@@ -30,9 +30,7 @@ class ICloudStorage {
   /// Get the root directory path for iCloud Drive storage.
   ///
   /// [containerId] is the iCloud Container Id.
-  static Future<String> rootDirectory({
-    required String containerId,
-  }) async {
+  static Future<String> rootDirectory({required String containerId}) async {
     return await ICloudStoragePlatform.instance.rootDirectory(
       containerId: containerId,
     );
@@ -255,7 +253,7 @@ class ICloudStorage {
       fromRelativePath: relativePath,
       toRelativePath:
           relativePath.substring(0, relativePath.lastIndexOf('/') + 1) +
-              newName,
+          newName,
     );
   }
 
@@ -270,7 +268,8 @@ class ICloudStorage {
   /// Private method to validate file name. It shall not contain '/' or ':', and
   /// it shall not start with '.', and the length shall be greater than 0 and
   /// less than 255.
-  static bool _validateFileName(String name) => !(name.isEmpty ||
-      name.length > 255 ||
-      RegExp(r"([:/]+)|(^[.].*$)").hasMatch(name));
+  static bool _validateFileName(String name) =>
+      !(name.isEmpty ||
+          name.length > 255 ||
+          RegExp(r"([:/]+)|(^[.].*$)").hasMatch(name));
 }

@@ -40,21 +40,23 @@ class ICloudFile {
 
   /// Constructor to create the object from the map passed from platform code
   ICloudFile.fromMap(Map<dynamic, dynamic> map)
-      : relativePath = Uri.decodeComponent(map['relativePath']),
-        absolutePath = map['absolutePath'],
-        displayName = map['displayName'],
-        fileSystemName = map['fileSystemName'],
-        directory = map['isDirectory'],
-        sizeInBytes = map['sizeInBytes'],
-        creationDate = DateTime.fromMillisecondsSinceEpoch(
-            ((map['creationDate'] as double) * 1000).round()),
-        contentChangeDate = DateTime.fromMillisecondsSinceEpoch(
-            ((map['contentChangeDate'] as double) * 1000).round()),
-        isDownloading = map['isDownloading'],
-        downloadStatus = _mapToDownloadStatusFromNSKeys(map['downloadStatus']),
-        isUploading = map['isUploading'],
-        isUploaded = map['isUploaded'],
-        hasUnresolvedConflicts = map['hasUnresolvedConflicts'];
+    : relativePath = Uri.decodeComponent(map['relativePath']),
+      absolutePath = map['absolutePath'],
+      displayName = map['displayName'],
+      fileSystemName = map['fileSystemName'],
+      directory = map['isDirectory'],
+      sizeInBytes = map['sizeInBytes'],
+      creationDate = DateTime.fromMillisecondsSinceEpoch(
+        ((map['creationDate'] as double) * 1000).round(),
+      ),
+      contentChangeDate = DateTime.fromMillisecondsSinceEpoch(
+        ((map['contentChangeDate'] as double) * 1000).round(),
+      ),
+      isDownloading = map['isDownloading'],
+      downloadStatus = _mapToDownloadStatusFromNSKeys(map['downloadStatus']),
+      isUploading = map['isUploading'],
+      isUploaded = map['isUploaded'],
+      hasUnresolvedConflicts = map['hasUnresolvedConflicts'];
 
   /// Map native download status keys to DownloadStatus enum
   static DownloadStatus _mapToDownloadStatusFromNSKeys(String key) {
